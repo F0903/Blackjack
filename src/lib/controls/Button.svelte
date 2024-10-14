@@ -1,0 +1,21 @@
+<script lang="ts">
+  export let color: string;
+  export let text_color: string;
+  export let font_weight: string;
+  export let border_radius: string;
+</script>
+
+<button
+  style="background-color: {color}; color: {text_color}; border-radius: {border_radius}; font-weight: {font_weight}"
+  ><slot /></button
+>
+
+<style>
+  button {
+    border: 0;
+    margin: 10px;
+    padding: 10px 16px;
+
+    text-align: center;
+  }
+</style>
