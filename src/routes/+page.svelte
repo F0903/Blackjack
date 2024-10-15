@@ -1,57 +1,45 @@
 <script lang="ts">
+  import { onMount } from "svelte";
   import Button from "../lib/controls/Button.svelte";
   import Controls from "../lib/controls/Controls.svelte";
   import TextBox from "../lib/controls/TextBox.svelte";
   import Hand from "../lib/Hand.svelte";
-  import type { Card } from "../lib/models/Card";
-  import { Suit } from "../lib/models/Suit";
+  import {
+    dealer_cards,
+    player_cards,
+    hit,
+    player_balance,
+  } from "$lib/game/game";
 
-  let dealer_cards: Card[] = [];
-
-  let player_cards: Card[] = [
-    { rank: "2", suit: Suit.Diamonds },
-    { rank: "4", suit: Suit.Clubs },
-    { rank: "A", suit: Suit.Hearts },
-  ];
-
-  let balance = 1000;
+  onMount(() => {});
 </script>
 
 <div class="container">
   <div class="table">
-    <!-- <div class="dealer-container">
-      <Hand
-        hand_label="Dealer"
-        hand_color="rgb(65, 65, 65)"
-        cards={dealer_cards}
-      />
-    </div> -->
+    <div class="dealer-container">
+      <Hand label="Dealer" hand_color="rgb(65, 65, 65)" cards={$dealer_cards}
+      ></Hand>
+    </div>
     <div class="player-container">
-      <Hand hand_color="rgb(65, 65, 65)" cards={player_cards}>
-        <span style="color: white;">You</span>
-      </Hand>
+      <Hand label="You" hand_color="rgb(65, 65, 65)" cards={$player_cards}
+      ></Hand>
     </div>
   </div>
   <Controls color="rgb(85, 85, 85)" border_radius="25px">
     <Button
+      on:click={hit}
       color="rgb(65, 65, 65)"
       text_color="white"
       font_weight="600"
       border_radius="25px">HIT</Button
     >
-    <Button
-      color="rgb(65, 65, 65)"
-      text_color="white"
-      font_weight="600"
-      border_radius="25px">DOUBLE</Button
-    >
     <TextBox
-      color="rgb(65, 65, 65)"
+      color="rgb(50, 50, 50)"
       text_color="rgb(100, 145, 97)"
-      border_radius="25px">{"$" + balance}</TextBox
+      border_radius="25px">{"$" + $player_balance}</TextBox
     >
     <Button
-      color="rgb(153, 58, 58)"
+      color="rgb(65, 65, 65)"
       text_color="white"
       font_weight="600"
       border_radius="25px">STAND</Button
@@ -60,6 +48,16 @@
 </div>
 
 <style>
+  .table {
+    margin: auto;
+
+    display: flex;
+    flex-direction: column;
+    place-items: center;
+    place-content: center;
+    gap: 25px;
+  }
+
   .player-container {
     margin-top: auto;
     margin-left: auto;

@@ -1,0 +1,4 @@
+CREATE TABLE IF NOT EXISTS players (
+    id INT PRIMARY KEY,
+    balance INT NOT NULL
+);

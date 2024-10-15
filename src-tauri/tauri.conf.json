@@ -13,10 +13,8 @@
     "windows": [
       {
         "title": "blackjack",
-        "width": 1000,
         "minWidth": 800,
-        "height": 800,
-        "minHeight": 600
+        "minHeight": 800
       }
     ],
     "security": {

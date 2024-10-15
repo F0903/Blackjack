@@ -6,6 +6,7 @@
 </script>
 
 <button
+  on:click
   style="background-color: {color}; color: {text_color}; border-radius: {border_radius}; font-weight: {font_weight}"
   ><slot /></button
 >
