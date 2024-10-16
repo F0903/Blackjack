@@ -24,7 +24,8 @@ pub fn run() {
         })
         .plugin(tauri_plugin_shell::init())
         .invoke_handler(tauri::generate_handler![
-            db::tables::players::commands::player_update_balance
+            db::tables::players::commands::player_update_balance,
+            db::tables::players::commands::player_get_balance
         ])
         .run(tauri::generate_context!())
         .expect("error while running application");

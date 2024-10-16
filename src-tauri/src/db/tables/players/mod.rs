@@ -22,4 +22,12 @@ impl<'a> PlayersTable<'a> {
         .await?;
         Ok(())
     }
+
+    pub async fn get_balance(&self, player_id: u32) -> Result<i32> {
+        let bal = sqlx::query!("SELECT balance FROM players WHERE id = ?", player_id)
+            .fetch_one(self.db.get_pool())
+            .await?
+            .balance;
+        return Ok(bal);
+    }
 }

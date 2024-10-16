@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { rankToString, type Rank } from "$lib/models/Rank";
-  import { Suit, suitToColor, suitToEmoji } from "$lib/models/Suit";
+  import { rankToString, type Rank } from "$lib/game/card/Rank";
+  import { Suit, suitToColor, suitToEmoji } from "$lib/game/card/Suit";
 
   export let upsidedown: boolean = false;
   export let suit: Suit;

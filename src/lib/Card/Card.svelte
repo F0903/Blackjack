@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { Rank } from "$lib/models/Rank";
-  import type { Suit } from "$lib/models/Suit";
+  import { Rank } from "$lib/game/card/Rank";
+  import type { Suit } from "$lib/game/card/Suit";
   import CardBack from "./CardBack.svelte";
   import CardSymbols from "./CardSymbols.svelte";
 
@@ -40,7 +40,7 @@
 
     --card-border-radius: 10px;
 
-    width: 75px;
+    width: 60px;
     aspect-ratio: 0.714;
     background-color: white;
     margin: 10px;

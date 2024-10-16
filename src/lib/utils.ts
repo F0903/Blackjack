@@ -1,3 +1,4 @@
-export function clamp(value: number, min: number, max: number): number {
-  return Math.min(Math.max(value, min), max);
-}
+// export function numEquals(a: number, b: number): boolean {
+//   // I hate JS floating point numbers.
+//   return a < b + Number.EPSILON && a > b - Number.EPSILON;
+// }

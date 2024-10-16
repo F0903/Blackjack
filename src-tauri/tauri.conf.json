@@ -14,7 +14,7 @@
       {
         "title": "blackjack",
         "minWidth": 800,
-        "minHeight": 800
+        "minHeight": 600
       }
     ],
     "security": {
