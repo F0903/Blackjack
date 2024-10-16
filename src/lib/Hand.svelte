@@ -47,11 +47,7 @@
 
 <div
   class="player-hand"
-  style="background-color: {hand.isLost()
-    ? 'red'
-    : hand.isWon()
-      ? 'green'
-      : hand_color};"
+  style="background-color: {hand.getColor(hand_color)};"
   bind:this={hand_elem}
 >
   <div class="label-container">
@@ -91,7 +87,7 @@
 
   .card-stack {
     position: relative;
-    margin-left: 15px;
+    margin-left: 25px;
   }
 
   .player-hand {

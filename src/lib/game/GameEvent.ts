@@ -1,6 +1,6 @@
 type GameEventFn = () => void;
 
-export class GameEvent {
+export class GameEvent<Fn = GameEventFn> {
   private subscribers: GameEventFn[] = [];
 
   public sub(fn: GameEventFn) {

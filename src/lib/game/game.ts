@@ -1,15 +1,14 @@
-import { CardModel } from "$lib/game/card/CardModel";
 import { derived, get, writable } from "svelte/store";
 import { GameEvent } from "./GameEvent";
 import type { Writable } from "svelte/store";
 import { Player } from "./Player";
 import { HandModel } from "./HandModel";
+import { sleep } from "$lib/utils";
 
 export const onStart = new GameEvent();
-export const onWon = new GameEvent();
-export const onLost = new GameEvent();
+export const onGameEnd = new GameEvent();
 
-export const dealer_hand: Writable<HandModel> = writable(new HandModel(0));
+export const dealer_hand: Writable<HandModel> = writable(new HandModel());
 export const dealer_cards = derived(dealer_hand, (hand) => hand.getCards());
 
 // The hardcoded id of 0 is a little hack for now.
@@ -28,57 +27,99 @@ const win_blackjack_multiplier = 3;
 let bets: number = 0;
 
 export async function startGame(initial_bet: number) {
+  console.log("starting game... initial bet: " + initial_bet);
+  onStart.call();
+
   bets += initial_bet;
   player.update((player) => {
     player.decreaseBalance(bets);
     return player;
   });
 
-  // Dealer gets one face down and one face up to start.
-  drawDealer(true);
-  drawDealer(false);
-  // Player gets two as well but face up.
-  drawPlayer(false);
-  drawPlayer(false);
+  dealer_hand.update((dealer_hand) => {
+    player.update((player) => {
+      // Dealer gets one face down and one face up to start.
+      dealer_hand.draw(true);
+      dealer_hand.draw(false);
 
-  onStart.call();
+      let player_hand = player.getCurrentHand();
+      // Player gets two as well but face up.
+      player_hand.draw(false);
+      player_hand.draw(false);
+
+      // Check for blackjack combinations
+      if (player_hand.isBlackjack() && dealer_hand.isBlackjack()) {
+        player_hand.setState("push");
+        drawAll();
+      } else if (player_hand.isBlackjack()) {
+        player_hand.setState("won");
+        winAll();
+      } else if (dealer_hand.isBlackjack()) {
+        dealer_hand.setState("won");
+        loseAll();
+      }
+
+      return player;
+    });
+    return dealer_hand;
+  });
 }
 
 function resetState() {
   player.update((player) => {
-    player.removeExtraHands();
-    player.clearAllCards();
-    player.resetHands();
-    split_available.set(false);
+    player.reset();
     return player;
   });
 
   dealer_hand.update((hand) => {
-    hand.clearCards();
+    hand.clear();
     return hand;
   });
+
+  split_available.set(false);
+  bets = 0;
 }
 
-function lostGame() {
-  console.log("Game has been lost.");
+function calcWinnings(hand: HandModel): number {
+  return (
+    bets * (hand.isBlackjack() ? win_blackjack_multiplier : win_multiplier)
+  );
+}
+
+async function endGame() {
+  await sleep(2000);
+  resetState();
+  onGameEnd.call();
+}
+
+async function loseAll() {
+  console.log("Every hand has been lost.");
   player.update((player) => {
-    player.decreaseBalance(bets);
+    // The bets have already been withdrawn, so we just need to persist them.
     player.persistChanges();
     return player;
   });
 
-  resetState();
-  onLost.call();
+  await endGame();
 }
 
-function wonGame() {
-  console.log("Game won.");
+async function drawAll() {
+  console.log("Every hand has been drew.");
   player.update((player) => {
-    // Check each hand to see if has blackjack
+    player.increaseBalance(bets); // Give back the bets.
+    player.persistChanges();
+    return player;
+  });
+
+  await endGame();
+}
+
+async function winAll() {
+  console.log("Every hand has been won.");
+  player.update((player) => {
     player.getHands().forEach((hand) => {
-      const winnings =
-        bets * (hand.isBlackjack() ? win_blackjack_multiplier : win_multiplier);
-      player.increaseBalance(winnings);
+      hand.setState("won");
+      player.increaseBalance(calcWinnings(hand));
     });
 
     // Write changes to DB
@@ -86,37 +127,11 @@ function wonGame() {
     return player;
   });
 
-  resetState();
-  onWon.call();
+  await endGame();
 }
 
-function drawCard(array: CardModel[], face_down: boolean) {
-  let card = CardModel.getRandom(face_down);
-  array.push(card);
-}
-
-function drawPlayer(face_down: boolean) {
-  player.update((player) => {
-    player.getHands().forEach((hand) => {
-      // Don't draw cards to hands that are lost.
-      if (hand.isLost()) return;
-      let cards = hand.getCards();
-      drawCard(cards, face_down);
-    });
-    return player;
-  });
-}
-
-function drawDealer(face_down: boolean) {
-  dealer_hand.update((hand) => {
-    let cards = hand.getCards();
-    drawCard(cards, face_down);
-    return hand;
-  });
-}
-
-async function advance_dealer() {
-  let doneDrawing = false;
+async function advanceDealer() {
+  let dealerState: "lost" | "stand" | "drawing" = "drawing";
 
   // Check conditions on dealer cards.
   dealer_hand.update((hand) => {
@@ -127,71 +142,99 @@ async function advance_dealer() {
     let dealer_sum = hand.getValueSum();
     if (dealer_sum <= 16) {
       console.log("Dealer can draw.");
-      drawCard(cards, false);
+      hand.draw(false);
+      dealerState = "drawing";
     } else if (dealer_sum > 21) {
-      // If dealer sum is above 21 we can just call it a win early.
-      wonGame();
+      hand.setState("lost");
+      dealerState = "lost";
     } else {
-      console.log("Dealer is done drawing.");
-      doneDrawing = true; // Dealer can draw no more cards.
-      return hand;
+      console.log(cards);
+      dealerState = "stand"; // Dealer can draw no more cards.
     }
-
     return hand;
   });
 
-  if (doneDrawing) {
-    return;
+  console.log("checking dealer state...");
+  //NOTE: typescript can not see that dealerState is modified in callback above.
+  switch (dealerState) {
+    //@ts-ignore
+    case "lost":
+      return winAll(); // Remember if the dealer wins, that means we lose ;)
+    //@ts-ignore
+    case "stand":
+      return;
+    //@ts-ignore
+    case "drawing":
+      await sleep(1000);
+      return advanceDealer();
   }
-
-  // Short delay so it's less confusing when the dealer draws again.
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-  return advance_dealer();
 }
 
-async function check_player() {
-  let lostHandsCount = 0;
-  // Check conditions on player cards.
+async function resolveHand() {
+  // We aren't gonna modify the dealer hand, so we can use get() instead of update()
+  let deal_hand = get(dealer_hand);
+
+  let end_game = false;
+
   player.update((player) => {
-    player.getHands().forEach((hand) => {
-      if (hand.isBlackjack()) {
-        hand.setWon(true);
-        return hand;
-      }
+    let player_hand = player.getCurrentHand();
 
-      let hand_sum = hand.getValueSum();
-      if (hand_sum > 21) {
-        hand.setLost(true); // The hand is over 21 and has been lost.
-        console.log("hand has been lost");
-        lostHandsCount += 1;
-        return hand; // Exit early, no more to do here.
-      }
+    if (player_hand.higherThan(deal_hand)) {
+      console.log("hand won");
+      player_hand.setState("won");
+      player.increaseBalance(calcWinnings(player_hand));
+    } else if (player_hand.equal(deal_hand)) {
+      console.log("hand drew");
+      player_hand.setState("push");
+      player.increaseBalance(bets);
+    } else {
+      console.log("hand lost");
+      player_hand.setState("lost");
+    }
 
-      split_available.set(hand.canSplit());
-    });
+    if (player.hasOtherHands()) player.swapNextHand();
+    else end_game = true;
+
+    player.persistChanges();
 
     return player;
   });
 
-  console.log("Lost hands count = " + lostHandsCount);
-  if (lostHandsCount == get(player_hands).length) {
-    lostGame();
-    return;
-  }
+  if (end_game) await endGame();
 }
 
-async function advance() {
-  check_player();
-  advance_dealer();
+export function split() {
+  //TODO
 }
 
-export function split() {}
+export function hit() {
+  let bust = false;
 
-export async function hit() {
-  drawPlayer(false);
-  await advance();
+  player.update((player) => {
+    let hand = player.getCurrentHand();
+
+    hand.draw(false);
+
+    let hand_sum = hand.getValueSum();
+    if (hand_sum > 21) {
+      hand.setState("lost");
+      if (player.hasOtherHands()) {
+        player.swapNextHand();
+      } else {
+        bust = true;
+      }
+      return player;
+    }
+
+    split_available.set(hand.canSplit());
+
+    return player;
+  });
+
+  if (bust) loseAll();
 }
 
 export async function stand() {
-  await advance();
+  await advanceDealer();
+  resolveHand();
 }

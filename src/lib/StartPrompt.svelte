@@ -2,21 +2,24 @@
   import Button from "./controls/Button.svelte";
   import Controls from "./controls/Controls.svelte";
   import TextBox from "./controls/TextBox.svelte";
-  import { player_balance, startGame, onStart, onLost } from "./game/game";
+  import { player_balance, startGame, onStart, onGameEnd } from "./game/game";
   import Overlay from "./Overlay.svelte";
 
   let hidden = false;
+
   const bet_increment = 10;
   let bet: number = bet_increment;
   let current_player_bal: number = $player_balance;
+
+  let title = "Blackjack";
 
   onStart.sub(() => {
     console.log("game start");
     hidden = true;
   });
 
-  onLost.sub(() => {
-    console.log("game lost");
+  onGameEnd.sub(() => {
+    console.log("game end");
     hidden = false;
   });
 
@@ -40,7 +43,7 @@
   <div class="start-prompt-container">
     <div class="start-prompt">
       <div class="title-container">
-        <span>Blackjack</span>
+        <span>{title}</span>
       </div>
       <div class="balance-container">
         <div class="bet-text-container">

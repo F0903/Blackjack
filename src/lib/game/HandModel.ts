@@ -1,47 +1,41 @@
-import type { CardModel } from "./card/CardModel";
+import { CardModel } from "./card/CardModel";
 import { Rank } from "./card/Rank";
 
+export type HandState = "won" | "lost" | "push" | "in-play";
+
 export class HandModel {
-  private handIndex: number;
   private cards: CardModel[] = [];
 
-  private handIsLost: boolean = false;
-  private handIsWon: boolean = false;
+  private handState: HandState = "in-play";
 
-  constructor(handIndex: number) {
-    this.handIndex = handIndex;
+  public draw(face_down: boolean) {
+    let card = CardModel.getRandom(face_down);
+    this.cards.push(card);
   }
 
   public canDraw() {
-    return !this.handIsLost && !this.handIsWon;
+    return this.handState == "in-play";
   }
 
-  public setWon(value: boolean) {
-    this.handIsWon = value;
+  public setState(state: HandState) {
+    this.handState = state;
   }
 
   public isWon(): boolean {
-    return this.handIsWon;
-  }
-
-  public setLost(value: boolean) {
-    this.handIsLost = value;
+    return this.handState === "won";
   }
 
   public isLost(): boolean {
-    return this.handIsLost;
+    return this.handState === "lost";
   }
 
-  public clearCards() {
+  public clear() {
     this.cards = [];
+    this.handState = "in-play";
   }
 
   public getCards(): CardModel[] {
     return this.cards;
-  }
-
-  public getIndex(): number {
-    return this.handIndex;
   }
 
   public canSplit(): boolean {
@@ -90,5 +84,33 @@ export class HandModel {
     });
 
     return total;
+  }
+
+  public higherThan(other: HandModel): boolean {
+    let my_val = this.getValueSum();
+    let other_val = other.getValueSum();
+    return my_val > other_val;
+  }
+
+  public equal(other: HandModel): boolean {
+    let my_val = this.getValueSum();
+    let other_val = other.getValueSum();
+    return my_val === other_val;
+  }
+
+  public getColor(default_value: string): string {
+    switch (this.handState) {
+      case "won":
+        console.log("color won");
+        return "green";
+      case "lost":
+        console.log("color lost");
+        return "red";
+      case "push":
+        console.log("color push");
+        return "yellow";
+      default:
+        return default_value;
+    }
   }
 }

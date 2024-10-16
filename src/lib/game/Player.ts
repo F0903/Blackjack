@@ -5,7 +5,9 @@ import { HandModel } from "./HandModel";
 export class Player {
   private id: number;
   private balance: number;
-  private hands: HandModel[] = [new HandModel(0)];
+
+  private hands: HandModel[] = [new HandModel()];
+  private currentHandIndex: number = 0;
 
   constructor(id: number, balance: number) {
     this.id = id;
@@ -33,18 +35,22 @@ export class Player {
     return this.hands;
   }
 
-  public clearAllCards() {
-    this.hands.forEach((hand) => hand.clearCards());
+  public getCurrentHand(): HandModel {
+    return this.hands[this.currentHandIndex];
   }
 
-  public removeExtraHands() {
-    this.hands.splice(1);
+  public hasOtherHands(): boolean {
+    return this.hands.length > 1;
   }
 
-  public resetHands() {
-    this.hands.forEach((hand) => {
-      hand.setLost(false);
-    });
+  public swapNextHand() {
+    this.currentHandIndex += 1;
+  }
+
+  public reset() {
+    this.hands.splice(1); // Remove all other hands
+    this.getCurrentHand().clear();
+    this.currentHandIndex = 0;
   }
 
   public async persistChanges() {
