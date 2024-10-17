@@ -12,8 +12,6 @@ import {
 export const onStart = new GameEvent();
 export const onEnd = new GameEvent();
 
-//TODO: figure out ways to refactor this.
-
 export async function start(initialBet: number) {
   console.log("starting game... initial bet: " + initialBet);
   onStart.call();
@@ -35,6 +33,8 @@ async function drawInitialCards(initialBet: number) {
 
   dealer_hand.update((dealer_hand) => {
     player.update((player) => {
+      player.assertHand(); // See comment in method for call reason.
+
       // Dealer gets one face down and one face up to start.
       dealer_hand.draw(true);
       dealer_hand.draw(false);
@@ -44,6 +44,7 @@ async function drawInitialCards(initialBet: number) {
       player_hand.draw(false);
       player_hand.draw(false);
       player_hand.bet(initialBet);
+      player_hand.select();
 
       split_available.set(player_hand.canSplit());
 
@@ -165,8 +166,8 @@ async function resolveHand() {
 
     if (player.areAllHandsDone()) endGame = true;
     if (player.hasOtherHands()) {
-      player.selectNextHand();
-      split_available.set(hand.canSplit());
+      let newHand = player.selectNextHand();
+      split_available.set(newHand.canSplit());
       double_available.set(true);
     }
     return player;
@@ -191,10 +192,10 @@ export async function double() {
 }
 
 export function split() {
-  split_available.set(false);
-
   player.update((player) => {
     player.splitHand();
+    let newHand = player.getCurrentHand();
+    split_available.set(newHand.canSplit());
     return player;
   });
 }

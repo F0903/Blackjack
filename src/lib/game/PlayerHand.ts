@@ -1,13 +1,30 @@
 import { BetPool } from "./BetPool";
+import { CardModel } from "./card/CardModel";
 import { HandModel } from "./HandModel";
 
 export class PlayerHand extends HandModel {
   private bets: BetPool = new BetPool();
 
-  private doubledDown: boolean = false;
+  private selected: boolean;
+
+  constructor(selected: boolean = false, initCards: CardModel[] = []) {
+    super(initCards);
+    this.selected = selected;
+  }
+
+  public isSelected(): boolean {
+    return this.selected;
+  }
+
+  public select() {
+    this.selected = true;
+  }
+
+  public deselect() {
+    this.selected = false;
+  }
 
   public doubleDown() {
-    this.doubledDown = true;
     this.bets.doubleBet();
   }
 
@@ -23,7 +40,7 @@ export class PlayerHand extends HandModel {
   public split(): PlayerHand {
     const cards = this.cards.splice(1);
 
-    const newHand = new PlayerHand(cards);
+    const newHand = new PlayerHand(false, cards);
     newHand.bet(this.bets.getCurrentBet());
     newHand.draw(false);
 
@@ -44,7 +61,6 @@ export class PlayerHand extends HandModel {
 
   public override clear(): void {
     super.clear();
-    this.doubledDown = false;
     this.bets.reset();
   }
 }

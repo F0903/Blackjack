@@ -2,10 +2,9 @@
   export let color: string;
   export let text_color: string;
   export let font_weight: string;
-  export let font_size: string = "14px";
-  export let aspect_ratio: string | null = null;
 
   export let border_radius: string;
+  export let size: string;
   export let padding: string | null = null;
 
   export let interactable: boolean = true;
@@ -14,7 +13,7 @@
 <button
   on:click
   class:disabled={!interactable}
-  style="background-color: {color}; color: {text_color}; border-radius: {border_radius}; font-weight: {font_weight}; font-size: {font_size}; padding: {padding}; aspect-ratio: {aspect_ratio};"
+  style="background-color: {color}; color: {text_color}; border-radius: {border_radius}; font-weight: {font_weight}; width: {size}; height: {size}; padding: {padding};"
   ><slot /></button
 >
 
@@ -32,10 +31,12 @@
   button {
     border: 0;
     margin: 10px;
-    padding: 10px 16px;
 
     text-align: center;
     cursor: pointer;
     user-select: none;
+
+    aspect-ratio: 1;
+    overflow: hidden;
   }
 </style>

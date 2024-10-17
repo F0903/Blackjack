@@ -2,6 +2,7 @@
   import { tick } from "svelte";
   import Card from "./Card/Card.svelte";
   import type { HandModel } from "./game/HandModel";
+  import { PlayerHand } from "./game/PlayerHand";
 
   export let label: string;
   export let hand_color: string;
@@ -39,18 +40,19 @@
     card_stack_elem.style.height = total_height + "px";
   }
 
-  async function onNewCard() {
+  async function onHandChanged() {
     await tick(); // We need to wait to the DOM changes to happen before going further.
     calcHandDimensions();
   }
 
   $: if (hand) {
-    onNewCard();
+    onHandChanged();
   }
 </script>
 
 <div
-  class="player-hand"
+  class="hand"
+  class:selected={hand instanceof PlayerHand ? hand.isSelected() : false}
   style="background-color: {hand.getColor(hand_color)};"
   bind:this={hand_elem}
 >
@@ -79,13 +81,17 @@
 </div>
 
 <style>
+  .selected {
+    outline: var(--highlight-color) solid 5px;
+  }
+
   .value-container {
-    color: white;
+    color: var(--primary-text-color);
     font-weight: 800;
   }
 
   .label-container {
-    color: white;
+    color: var(--primary-text-color);
     font-family: Arial;
   }
 
@@ -94,7 +100,7 @@
     margin-left: 25px;
   }
 
-  .player-hand {
+  .hand {
     padding: 15px;
     width: fit-content;
     height: fit-content;

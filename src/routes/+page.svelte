@@ -5,16 +5,17 @@
 <Blackjack />
 
 <style>
-  :global(:root > body) {
+  :global(body) {
     margin: 0;
   }
 
   :root {
-    --primary-color: rgb(41, 41, 41);
-    --secondary-color: rgb(60, 60, 60);
-    --tertiary-color: rgb(65, 65, 65);
+    --primary-color: hsl(111, 40%, 14%);
+    --secondary-color: hsl(0, 0%, 13%);
+    --tertiary-color: hsl(0, 0%, 20%);
+    --highlight-color: hsl(37, 43%, 44%);
 
-    --primary-text-color: white;
+    --primary-text-color: hsl(0, 0%, 85%);
 
     box-sizing: border-box;
 

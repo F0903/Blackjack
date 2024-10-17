@@ -7,12 +7,19 @@ export class Player {
   private id: number;
   private balance: number;
 
-  private hands: PlayerHand[] = [new PlayerHand()];
+  private hands: PlayerHand[] = [];
   private currentHandIndex: number = 0;
 
   constructor(id: number, balance: number) {
     this.id = id;
     this.balance = balance;
+  }
+
+  public assertHand() {
+    // Have to init hands here instead of the field
+    // because of a presumed bug in vite or svelte.
+    // (says I can't access PlayerHand before initialization which is BS)
+    this.hands = [new PlayerHand(true)];
   }
 
   public reset() {
@@ -69,9 +76,16 @@ export class Player {
     return doneCount === this.hands.length;
   }
 
-  public selectNextHand() {
+  public selectNextHand(): PlayerHand {
+    this.getCurrentHand().deselect();
+
     this.currentHandIndex += 1;
     console.log("swapping hand, new index: " + this.currentHandIndex);
+
+    let newHand = this.getCurrentHand();
+    newHand.select();
+
+    return newHand;
   }
 
   public splitHand() {

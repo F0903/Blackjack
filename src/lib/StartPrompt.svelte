@@ -6,6 +6,9 @@
   import { start, onStart, onEnd } from "./game/game";
   import { player } from "./game/stores";
   import Overlay from "./Overlay.svelte";
+  import IconButton from "./controls/IconButton.svelte";
+  import PlusIcon from "./PlusIcon.svelte";
+  import MinusIcon from "./MinusIcon.svelte";
 
   let hidden = false;
 
@@ -60,39 +63,47 @@
         <div class="bet-text-container">
           <span>Place your bet:</span>
         </div>
-        <TextBox border_radius="25px" color="black" text_color="white"
-          >${$player.getBalance()}</TextBox
+        <TextBox
+          border_radius="25px"
+          color="var(--tertiary-color)"
+          text_color="var(--highlight-color)">${$player.getBalance()}</TextBox
         >
       </div>
-      <Controls color="grey" border_radius="25px">
-        <Button
+      <Controls color="var(--tertiary-color)" border_radius="25px">
+        <IconButton
           on:click={increaseBet}
-          border_radius="25px"
-          color="black"
+          border_radius="50%"
+          color="var(--secondary-color)"
           font_weight="600"
-          font_size="26px"
-          text_color="white">+</Button
+          size="50px"
+          padding="10px"
+          text_color="var(--primary-text-color)"
+          ><PlusIcon color="hsl(103, 50%, 25%)" /></IconButton
         >
-        <TextBox border_radius="25px" color="black" text_color="white"
-          >{bet}</TextBox
-        >
-        <Button
-          on:click={decreaseBet}
+        <TextBox
           border_radius="25px"
-          color="black"
+          color="var(--secondary-color)"
+          text_color="var(--primary-text-color)">{bet}</TextBox
+        >
+        <IconButton
+          on:click={decreaseBet}
+          border_radius="50%"
+          color="var(--secondary-color)"
           font_weight="500"
-          font_size="26px"
-          text_color="white">-</Button
+          size="50px"
+          padding="10px"
+          text_color="var(--primary-text-color)"
+          ><MinusIcon color="hsl(2, 50%, 25%)" /></IconButton
         >
       </Controls>
       <div class="start-container">
         <Button
           on:click={commitBet}
           border_radius="25px"
-          color="black"
+          color="var(--tertiary-color)"
           font_weight="800"
           font_size="18px"
-          text_color="white">Start</Button
+          text_color="var(--primary-text-color)">Start</Button
         >
       </div>
     </div>
@@ -109,7 +120,7 @@
   }
 
   .bet-text-container {
-    color: white;
+    color: var(--primary-text-color);
     text-align: center;
   }
 
@@ -124,7 +135,7 @@
   }
 
   .title-container {
-    color: white;
+    color: var(--primary-text-color);
 
     font-family: Arial;
     font-weight: 800;
@@ -135,7 +146,7 @@
 
   .start-prompt {
     padding: 25px;
-    background-color: rgb(68, 68, 68);
+    background-color: var(--secondary-color);
     width: fit-content;
     height: fit-content;
 

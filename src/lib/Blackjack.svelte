@@ -18,21 +18,24 @@
 <div class="container">
   <div class="table">
     <div class="dealer-container">
-      <Hand label="Dealer" hand_color="rgb(65, 65, 65)" hand={$dealer_hand}
+      <Hand
+        label="Dealer"
+        hand_color="var(--secondary-color)"
+        hand={$dealer_hand}
       ></Hand>
     </div>
     <div class="player-container">
       {#each $player.getHands() as hand}
-        <Hand label="You" hand_color="rgb(65, 65, 65)" {hand}></Hand>
+        <Hand label="You" hand_color="var(--secondary-color)" {hand}></Hand>
       {/each}
     </div>
   </div>
-  <Controls color="rgb(85, 85, 85)" border_radius="25px">
+  <Controls color="var(--secondary-color)" border_radius="25px">
     {#if $double_available}
       <Button
         interactable={$game_interactable}
         on:click={double}
-        color="rgb(65, 65, 65)"
+        color="var(--tertiary-color)"
         text_color="white"
         font_weight="600"
         border_radius="25px">DOUBLE</Button
@@ -42,7 +45,7 @@
       <Button
         interactable={$game_interactable}
         on:click={split}
-        color="rgb(65, 65, 65)"
+        color="var(--tertiary-color)"
         text_color="white"
         font_weight="600"
         border_radius="25px">SPLIT</Button
@@ -51,21 +54,21 @@
     <Button
       interactable={$game_interactable}
       on:click={hit}
-      color="rgb(65, 65, 65)"
+      color="var(--tertiary-color)"
       text_color="white"
       font_weight="600"
       border_radius="25px">HIT</Button
     >
     <TextBox
-      color="rgb(50, 50, 50)"
-      text_color="rgb(100, 145, 97)"
+      color="var(--tertiary-color)"
+      text_color="var(--highlight-color)"
       border_radius="25px">{"$" + $player.getBalance()}</TextBox
     >
     <Button
       interactable={$game_interactable}
       on:click={stand}
-      color="rgb(65, 65, 65)"
-      text_color="white"
+      color="var(--tertiary-color)"
+      text_color="var(--primary-text-color)"
       font_weight="600"
       border_radius="25px">STAND</Button
     >
@@ -90,7 +93,7 @@
 
     display: flex;
     flex-direction: row;
-    gap: 10px;
+    gap: 15px;
   }
 
   .container {
@@ -105,5 +108,7 @@
 
     width: 100vw;
     height: 100vh;
+
+    box-shadow: inset 0px 0px 200px 0px rgba(0, 0, 0, 0.7);
   }
 </style>
