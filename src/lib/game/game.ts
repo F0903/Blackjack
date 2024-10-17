@@ -180,6 +180,7 @@ async function resolveHand() {
 }
 
 export async function double() {
+  //TODO: check this works with split hands.
   split_available.set(false);
   double_available.set(false);
 
