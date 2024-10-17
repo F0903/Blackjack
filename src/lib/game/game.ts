@@ -113,14 +113,17 @@ async function advanceDealer(): Promise<boolean> {
 
     let dealer_sum = hand.getValueSum();
     if (dealer_sum <= 16) {
-      console.log("Dealer can draw.");
+      console.log("dealer is drawing...");
       hand.draw(false);
       dealerState = "drawing";
-    } else if (dealer_sum > 21) {
+    }
+
+    // We check dealer_sum again after drawing above.
+    if (dealer_sum > 21) {
       hand.lost();
       dealerState = "bust";
-    } else {
-      console.log(cards);
+    } else if (dealer_sum > 16) {
+      console.log("dealer is standing...");
       dealerState = "stand"; // Dealer can draw no more cards.
     }
     return hand;
