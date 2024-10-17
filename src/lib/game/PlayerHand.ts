@@ -22,8 +22,12 @@ export class PlayerHand extends HandModel {
 
   public split(): PlayerHand {
     const cards = this.cards.splice(1);
+
     const newHand = new PlayerHand(cards);
     newHand.bet(this.bets.getCurrentBet());
+    newHand.draw(false);
+
+    this.draw(false);
     return newHand;
   }
 

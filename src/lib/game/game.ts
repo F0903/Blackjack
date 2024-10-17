@@ -1,6 +1,5 @@
 import { get } from "svelte/store";
 import { GameEvent } from "./GameEvent";
-import { HandModel } from "./HandModel";
 import { sleep } from "$lib/utils";
 import {
   dealer_hand,
@@ -9,7 +8,6 @@ import {
   player,
   split_available,
 } from "./stores";
-import { BetPool } from "./BetPool";
 
 export const onStart = new GameEvent();
 export const onEnd = new GameEvent();
@@ -149,28 +147,32 @@ async function resolveHand() {
   // We aren't gonna modify the dealer hand, so we can use get() instead of update()
   let dealerHand = get(dealer_hand);
 
-  let end_game = false;
+  let endGame = false;
 
   player.update((player) => {
-    let player_hand = player.getCurrentHand();
+    let hand = player.getCurrentHand();
 
-    if (player_hand.higherThan(dealerHand)) {
+    if (hand.higherThan(dealerHand)) {
       console.log("hand won");
-      player_hand.win();
-    } else if (player_hand.equal(dealerHand)) {
+      hand.win();
+    } else if (hand.equal(dealerHand)) {
       console.log("hand drew");
-      player_hand.push();
+      hand.push();
     } else {
       console.log("hand lost");
-      player_hand.lost();
+      hand.lost();
     }
 
-    if (player.areAllHandsDone()) end_game = true;
-    if (player.hasOtherHands()) player.selectNextHand();
+    if (player.areAllHandsDone()) endGame = true;
+    if (player.hasOtherHands()) {
+      player.selectNextHand();
+      split_available.set(hand.canSplit());
+      double_available.set(true);
+    }
     return player;
   });
 
-  if (end_game) await end();
+  if (endGame) await end();
 }
 
 export async function double() {
@@ -189,11 +191,12 @@ export async function double() {
 }
 
 export function split() {
+  split_available.set(false);
+
   player.update((player) => {
     player.splitHand();
     return player;
   });
-  split_available.set(false);
 }
 
 export async function hit(): Promise<boolean> {
@@ -212,6 +215,8 @@ export async function hit(): Promise<boolean> {
       hand.lost();
       if (player.hasOtherHands()) {
         player.selectNextHand();
+        split_available.set(hand.canSplit());
+        double_available.set(true);
       } else {
         hand.lost();
         allBust = true;
