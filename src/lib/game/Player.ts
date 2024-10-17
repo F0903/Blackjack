@@ -1,17 +1,23 @@
 import type { CardModel } from "$lib/game/card/CardModel";
 import { invoke } from "@tauri-apps/api/core";
 import { HandModel } from "./HandModel";
+import { PlayerHand } from "./PlayerHand";
 
 export class Player {
   private id: number;
   private balance: number;
 
-  private hands: HandModel[] = [new HandModel()];
+  private hands: PlayerHand[] = [new PlayerHand()];
   private currentHandIndex: number = 0;
 
   constructor(id: number, balance: number) {
     this.id = id;
     this.balance = balance;
+  }
+
+  public reset() {
+    this.removeExtraHands();
+    this.getCurrentHand().clear();
   }
 
   public decreaseBalance(sub: number) {
@@ -35,25 +41,52 @@ export class Player {
     return this.hands;
   }
 
-  public getCurrentHand(): HandModel {
+  public getCurrentHand(): PlayerHand {
+    console.log("Getting current hand with index = " + this.currentHandIndex);
     return this.hands[this.currentHandIndex];
   }
 
+  // Does the player have other hands after the one he is holding?
   public hasOtherHands(): boolean {
+    return this.hands.length > this.currentHandIndex + 1;
+  }
+
+  public hasMultipleHands(): boolean {
     return this.hands.length > 1;
   }
 
-  public swapNextHand() {
-    this.currentHandIndex += 1;
+  public areAllHandsDone(): boolean {
+    let doneCount = 0;
+    this.hands.forEach((hand) => {
+      if (hand.inPlay()) return;
+
+      console.log("Hand is done.");
+      doneCount += 1;
+    });
+
+    console.log("Hand done count = " + doneCount);
+    console.log("hands count = " + this.hands.length);
+    return doneCount === this.hands.length;
   }
 
-  public reset() {
-    this.hands.splice(1); // Remove all other hands
-    this.getCurrentHand().clear();
+  public selectNextHand() {
+    this.currentHandIndex += 1;
+    console.log("swapping hand, new index: " + this.currentHandIndex);
+  }
+
+  public splitHand() {
+    let hand = this.getCurrentHand();
+    let newHand = hand.split();
+    this.hands.push(newHand);
+  }
+
+  removeExtraHands() {
+    if (!this.hasMultipleHands()) return;
+    this.hands.splice(1);
     this.currentHandIndex = 0;
   }
 
-  public async persistChanges() {
+  public async commitBalance() {
     await invoke("player_update_balance", {
       playerId: this.id,
       newBal: this.balance,

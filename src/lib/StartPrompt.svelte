@@ -1,27 +1,19 @@
 <script lang="ts">
+  import { onMount } from "svelte";
   import Button from "./controls/Button.svelte";
   import Controls from "./controls/Controls.svelte";
   import TextBox from "./controls/TextBox.svelte";
-  import { player_balance, startGame, onStart, onGameEnd } from "./game/game";
+  import { start, onStart, onEnd } from "./game/game";
+  import { player } from "./game/stores";
   import Overlay from "./Overlay.svelte";
 
   let hidden = false;
 
   const bet_increment = 10;
   let bet: number = bet_increment;
-  let current_player_bal: number = $player_balance;
+  let current_player_bal: number = $player.getBalance();
 
   let title = "Blackjack";
-
-  onStart.sub(() => {
-    console.log("game start");
-    hidden = true;
-  });
-
-  onGameEnd.sub(() => {
-    console.log("game end");
-    hidden = false;
-  });
 
   function increaseBet() {
     if (bet + bet_increment > current_player_bal) return;
@@ -35,8 +27,27 @@
 
   async function commitBet() {
     if (bet == 0) return;
-    startGame(bet);
+    start(bet);
   }
+
+  onMount(() => {
+    const on_start = () => {
+      console.log("game start");
+      hidden = true;
+    };
+    onStart.sub(on_start);
+
+    const on_end = () => {
+      console.log("game end");
+      hidden = false;
+    };
+    onEnd.sub(on_end);
+
+    return () => {
+      onStart.unsub(on_start);
+      onEnd.unsub(on_end);
+    };
+  });
 </script>
 
 <Overlay {hidden}>
@@ -50,7 +61,7 @@
           <span>Place your bet:</span>
         </div>
         <TextBox border_radius="25px" color="black" text_color="white"
-          >${$player_balance}</TextBox
+          >${$player.getBalance()}</TextBox
         >
       </div>
       <Controls color="grey" border_radius="25px">

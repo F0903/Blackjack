@@ -1,10 +1,13 @@
-type GameEventFn = () => void;
+export class GameEvent<Fn extends Function = () => void> {
+  private subscribers: Set<Fn> = new Set();
 
-export class GameEvent<Fn = GameEventFn> {
-  private subscribers: GameEventFn[] = [];
+  public sub(fn: Fn) {
+    console.log("adding subscriber to game event");
+    this.subscribers.add(fn);
+  }
 
-  public sub(fn: GameEventFn) {
-    this.subscribers.push(fn);
+  public unsub(fn: Fn) {
+    this.subscribers.delete(fn);
   }
 
   public call() {

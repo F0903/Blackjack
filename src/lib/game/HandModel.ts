@@ -4,9 +4,13 @@ import { Rank } from "./card/Rank";
 export type HandState = "won" | "lost" | "push" | "in-play";
 
 export class HandModel {
-  private cards: CardModel[] = [];
+  protected cards: CardModel[];
 
   private handState: HandState = "in-play";
+
+  constructor(initCards: CardModel[] = []) {
+    this.cards = initCards;
+  }
 
   public draw(face_down: boolean) {
     let card = CardModel.getRandom(face_down);
@@ -17,16 +21,22 @@ export class HandModel {
     return this.handState == "in-play";
   }
 
-  public setState(state: HandState) {
-    this.handState = state;
+  public win() {
+    // We could check for blackjack here but when this is called
+    // it would already have been decided, so we just take it as a parameter
+    this.handState = "won";
   }
 
-  public isWon(): boolean {
-    return this.handState === "won";
+  public lost() {
+    this.handState = "lost";
   }
 
-  public isLost(): boolean {
-    return this.handState === "lost";
+  public push() {
+    this.handState = "push";
+  }
+
+  public inPlay(): boolean {
+    return this.handState === "in-play";
   }
 
   public clear() {
@@ -36,11 +46,6 @@ export class HandModel {
 
   public getCards(): CardModel[] {
     return this.cards;
-  }
-
-  public canSplit(): boolean {
-    if (this.cards.length != 2) return false;
-    return this.cards[0].getHash() === this.cards[1].getHash();
   }
 
   public isBlackjack(): boolean {
@@ -67,12 +72,14 @@ export class HandModel {
     return aceCount == 2 && namedCount == 1;
   }
 
-  public getValueSum(): number {
+  public getValueSum(ignoreHiddenCards: boolean = false): number {
     let total = 0;
 
     // Count the aces last or the value will be wrong if the ace is in the middle.
     let aces: CardModel[] = [];
     this.cards.forEach((card) => {
+      if (card.isFaceDown() && ignoreHiddenCards) return; // Don't count hidden cards
+
       if (card.getRank() === Rank.Ace) {
         aces.push(card);
         return;
@@ -80,6 +87,7 @@ export class HandModel {
       total += card.getValue(total);
     });
     aces.forEach((ace) => {
+      // We don't need to do the hidden check here as the ace isn't added if its hidden.
       total += ace.getValue(total);
     });
 

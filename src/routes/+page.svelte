@@ -3,14 +3,15 @@
   import Controls from "../lib/controls/Controls.svelte";
   import TextBox from "../lib/controls/TextBox.svelte";
   import Hand from "../lib/Hand.svelte";
+  import { hit, stand, split, double } from "$lib/game/game";
+  import StartPrompt from "$lib/StartPrompt.svelte";
   import {
     dealer_hand,
-    player_hands,
-    hit,
-    stand,
+    split_available,
     player,
-  } from "$lib/game/game";
-  import StartPrompt from "$lib/StartPrompt.svelte";
+    double_available,
+    game_interactable,
+  } from "$lib/game/stores";
 </script>
 
 <StartPrompt />
@@ -21,13 +22,34 @@
       ></Hand>
     </div>
     <div class="player-container">
-      {#each $player_hands as hand}
+      {#each $player.getHands() as hand}
         <Hand label="You" hand_color="rgb(65, 65, 65)" {hand}></Hand>
       {/each}
     </div>
   </div>
   <Controls color="rgb(85, 85, 85)" border_radius="25px">
+    {#if $double_available}
+      <Button
+        interactable={$game_interactable}
+        on:click={double}
+        color="rgb(65, 65, 65)"
+        text_color="white"
+        font_weight="600"
+        border_radius="25px">DOUBLE</Button
+      >
+    {/if}
+    {#if $split_available}
+      <Button
+        interactable={$game_interactable}
+        on:click={split}
+        color="rgb(65, 65, 65)"
+        text_color="white"
+        font_weight="600"
+        border_radius="25px">SPLIT</Button
+      >
+    {/if}
     <Button
+      interactable={$game_interactable}
       on:click={hit}
       color="rgb(65, 65, 65)"
       text_color="white"
@@ -40,6 +62,7 @@
       border_radius="25px">{"$" + $player.getBalance()}</TextBox
     >
     <Button
+      interactable={$game_interactable}
       on:click={stand}
       color="rgb(65, 65, 65)"
       text_color="white"
@@ -64,6 +87,10 @@
     margin-top: auto;
     margin-left: auto;
     margin-right: auto;
+
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
   }
 
   .container {
@@ -85,6 +112,12 @@
   }
 
   :root {
+    --primary-color: rgb(41, 41, 41);
+    --secondary-color: rgb(60, 60, 60);
+    --tertiary-color: rgb(65, 65, 65);
+
+    --primary-text-color: white;
+
     box-sizing: border-box;
 
     font-family: Arial, sans-serif;
@@ -92,7 +125,8 @@
     line-height: 24px;
     font-weight: 400;
 
-    background-color: #292929;
+    background-color: var(--primary-color);
+    color: var(--primary-text-color);
 
     font-synthesis: none;
     text-rendering: optimizeLegibility;

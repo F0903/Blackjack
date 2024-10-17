@@ -1,6 +1,5 @@
 mod backend_error;
 mod db;
-mod models;
 mod utils;
 
 pub use backend_error::Result;

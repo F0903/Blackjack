@@ -13,10 +13,6 @@ export class CardModel {
     this.face_down = face_down;
   }
 
-  public getHash(): number {
-    return this.suit * this.rank;
-  }
-
   public getSuit(): Suit {
     return this.suit;
   }
@@ -50,10 +46,10 @@ export class CardModel {
       case Rank.Eight:
       case Rank.Nine:
       case Rank.Ten:
-        return this.rank;
+        return this.rank + 1; // Enums start at 0, so we have to add 1.
       case Rank.Jack:
-      case Rank.King:
       case Rank.Queen:
+      case Rank.King:
         return 10;
     }
   }

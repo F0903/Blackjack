@@ -16,7 +16,11 @@
   function calcHandDimensions() {
     console.log("Calculating hand dimensions...");
     let first_card = card_stack_elem.children[0];
-    if (!first_card) return;
+    if (!first_card) {
+      card_stack_elem.style.width = 0 + "px";
+      card_stack_elem.style.height = 0 + "px";
+      return;
+    }
 
     // Get dimensions of card.
     let width = first_card.clientWidth;
@@ -40,7 +44,7 @@
     calcHandDimensions();
   }
 
-  $: if (hand.getCards().length > 0) {
+  $: if (hand) {
     onNewCard();
   }
 </script>
@@ -70,7 +74,7 @@
     {/each}
   </div>
   <div class="value-container">
-    <span>{hand.getValueSum()}</span>
+    <span>{hand.getValueSum(true)}</span>
   </div>
 </div>
 
