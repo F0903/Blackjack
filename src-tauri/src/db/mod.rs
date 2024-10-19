@@ -1,7 +1,7 @@
 mod error;
-mod my_sql_db;
+mod sqlite_db;
 
 pub mod tables;
 
 pub use error::DbError;
-pub use my_sql_db::MySqlDb;
+pub use sqlite_db::SqliteDb;

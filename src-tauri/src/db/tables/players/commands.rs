@@ -5,7 +5,7 @@ use super::PlayersTable;
 pub async fn player_get_balance(
     state: tauri::State<'_, crate::AppState>,
     player_id: u32,
-) -> Result<i32> {
+) -> Result<i64> {
     let players = PlayersTable::on(state.db.get().await?).await?;
     let bal = players.get_balance(player_id).await?;
     Ok(bal)

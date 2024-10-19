@@ -4,12 +4,12 @@ mod utils;
 
 pub use backend_error::Result;
 
-use db::{DbError, MySqlDb};
+use db::{DbError, SqliteDb};
 use tauri::Manager;
 use utils::AsyncLazyCell;
 
 struct AppState {
-    db: AsyncLazyCell<MySqlDb, DbError>,
+    db: AsyncLazyCell<SqliteDb, DbError>,
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -17,7 +17,7 @@ pub fn run() {
     tauri::Builder::default()
         .setup(|app| {
             app.manage(AppState {
-                db: AsyncLazyCell::new(|| Box::pin(MySqlDb::new(env!("DATABASE_URL")))),
+                db: AsyncLazyCell::new(|| Box::pin(SqliteDb::new("blackjack.db"))),
             });
             Ok(())
         })
