@@ -56,7 +56,7 @@
 
 <Overlay {hidden}>
   <div class="start-prompt-container">
-    <div class="start-prompt">
+    <div class="start-prompt" class:hidden>
       <div class="title-container">
         <span>{title}</span>
       </div>
@@ -125,16 +125,6 @@
     text-align: center;
   }
 
-  .start-prompt-container {
-    display: flex;
-    flex-direction: column;
-    place-content: center;
-    justify-content: center;
-
-    width: 100%;
-    height: 100%;
-  }
-
   .title-container {
     color: var(--primary-text-color);
 
@@ -145,6 +135,11 @@
     margin-bottom: 25px;
   }
 
+  .start-prompt.hidden {
+    margin-bottom: 50px;
+    opacity: 25%;
+  }
+
   .start-prompt {
     padding: 25px;
     background-color: var(--secondary-color);
@@ -153,6 +148,21 @@
 
     border-radius: 25px;
 
-    margin: auto;
+    opacity: 100%;
+    margin-bottom: 0;
+
+    transition:
+      margin-bottom 0.4s,
+      opacity 0.5s;
+  }
+
+  .start-prompt-container {
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
   }
 </style>

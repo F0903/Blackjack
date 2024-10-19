@@ -8,7 +8,10 @@
 
 <style>
   .overlay.hidden {
-    display: none;
+    opacity: 0;
+    transition: opacity 0.6s;
+
+    pointer-events: none;
   }
 
   .overlay {
@@ -18,5 +21,7 @@
 
     width: 100vw;
     height: 100vh;
+
+    opacity: 1;
   }
 </style>
