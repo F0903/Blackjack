@@ -3,6 +3,7 @@
   import Card from "./Card/Card.svelte";
   import type { Hand } from "./game/Hand";
   import { PlayerHand } from "./game/PlayerHand";
+  import { fly, slide } from "svelte/transition";
 
   export let label: string;
   export let hand_color: string;
@@ -50,6 +51,7 @@
 </script>
 
 <div
+  transition:fly={{ y: 15 }}
   class="hand"
   class:selected={hand instanceof PlayerHand ? hand.isSelected() : false}
   style="background-color: {hand.getColor(hand_color)};"
@@ -60,6 +62,7 @@
   <div class="card-stack" bind:this={card_stack_elem}>
     {#each hand.getCards() as card, index}
       <div
+        transition:fly={{ y: 15 }}
         class="card-container"
         style="left: {index * CARD_LEFT_MARGIN + 'px'}; top: {index *
           CARD_TOP_MARGIN +
@@ -96,6 +99,10 @@
   .card-stack {
     position: relative;
     margin-left: 25px;
+
+    transition:
+      width 0.3s,
+      height 0.15s;
   }
 
   .hand {

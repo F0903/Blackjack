@@ -9,6 +9,7 @@
   import IconButton from "./controls/IconButton.svelte";
   import PlusIcon from "./PlusIcon.svelte";
   import MinusIcon from "./MinusIcon.svelte";
+  import { fly } from "svelte/transition";
 
   let hidden = false;
 
