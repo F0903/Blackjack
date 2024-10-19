@@ -12,6 +12,8 @@ import {
 export const onStart = new GameEvent();
 export const onEnd = new GameEvent();
 
+//TODO: look at ways to refactor this
+
 export async function start(initialBet: number) {
   console.log("starting game... initial bet: " + initialBet);
   onStart.call();
@@ -105,12 +107,23 @@ async function advanceDealer(): Promise<boolean> {
 
   game_interactable.set(false);
 
-  // Check conditions on dealer cards.
+  // Flip first card if face down and sleep after.
+  let firstCardDown = false;
   dealer_hand.update((hand) => {
     let cards = hand.getCards();
+    let firstCard = cards[0];
 
-    cards[0].setFaceDown(false); // Flip the dealers first card at this point.
+    firstCardDown = firstCard.isFaceDown();
+    if (firstCardDown) {
+      firstCard.flip();
+    }
 
+    return hand;
+  });
+  if (firstCardDown) await sleep(1000);
+
+  // Check conditions on dealer cards.
+  dealer_hand.update((hand) => {
     let dealer_sum = hand.getValueSum();
     if (dealer_sum <= 16) {
       console.log("dealer is drawing...");
@@ -180,7 +193,6 @@ async function resolveHand() {
 }
 
 export async function double() {
-  //TODO: check this works with split hands.
   split_available.set(false);
   double_available.set(false);
 
