@@ -1,5 +1,10 @@
 <script>
   import Blackjack from "$lib/Blackjack.svelte";
+  import { invoke } from "@tauri-apps/api/core";
+  import { onMount } from "svelte";
+
+  // The window is hidden by default to avoid the WebView "flicker".
+  onMount(() => invoke("show_window"));
 </script>
 
 <Blackjack />

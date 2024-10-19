@@ -1,3 +1,4 @@
+mod app_commands;
 mod backend_error;
 mod db;
 mod utils;
@@ -24,7 +25,8 @@ pub fn run() {
         .plugin(tauri_plugin_shell::init())
         .invoke_handler(tauri::generate_handler![
             db::tables::players::commands::player_update_balance,
-            db::tables::players::commands::player_get_balance
+            db::tables::players::commands::player_get_balance,
+            app_commands::show_window,
         ])
         .run(tauri::generate_context!())
         .expect("error while running application");

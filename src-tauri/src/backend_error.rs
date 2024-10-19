@@ -6,6 +6,8 @@ pub type Result<T> = std::result::Result<T, BackendError>;
 pub enum BackendError {
     #[error("{0}")]
     Database(#[from] crate::db::DbError),
+    #[error("tauri error: {0}")]
+    Tauri(#[from] tauri::Error),
 }
 
 impl serde::Serialize for BackendError {
@@ -15,7 +17,7 @@ impl serde::Serialize for BackendError {
     {
         let error_message = self.to_string();
         let error_kind = match self {
-            Self::Database(_) => error_message,
+            _ => error_message,
         };
         error_kind.serialize(serializer)
     }
