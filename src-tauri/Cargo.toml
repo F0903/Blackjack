@@ -21,7 +21,6 @@ tauri-build = { version = "2.0", features = [] }
 sqlx = { version = "0.8", features = [
     "runtime-tokio",
     "tls-native-tls",
-    "mysql",
     "sqlite",
 ] }
 tauri = { version = "2.0", features = [] }
