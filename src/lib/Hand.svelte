@@ -1,17 +1,16 @@
 <script lang="ts">
   import { tick } from "svelte";
   import Card from "./Card/Card.svelte";
-  import type { HandModel } from "./game/HandModel";
+  import type { Hand } from "./game/Hand";
   import { PlayerHand } from "./game/PlayerHand";
 
   export let label: string;
   export let hand_color: string;
-  export let hand: HandModel;
+  export let hand: Hand;
 
   const CARD_LEFT_MARGIN = 30;
   const CARD_TOP_MARGIN = 5;
 
-  let hand_elem: HTMLDivElement;
   let card_stack_elem: HTMLDivElement;
 
   function calcHandDimensions() {
@@ -54,7 +53,6 @@
   class="hand"
   class:selected={hand instanceof PlayerHand ? hand.isSelected() : false}
   style="background-color: {hand.getColor(hand_color)};"
-  bind:this={hand_elem}
 >
   <div class="label-container">
     <span>{label}</span>

@@ -1,6 +1,6 @@
-import type { CardModel } from "$lib/game/card/CardModel";
+import type { Card } from "$lib/game/card/Card";
 import { invoke } from "@tauri-apps/api/core";
-import { HandModel } from "./HandModel";
+import { Hand } from "./Hand";
 import { PlayerHand } from "./PlayerHand";
 
 export class Player {
@@ -16,15 +16,12 @@ export class Player {
   }
 
   public assertHand() {
-    // Have to init hands here instead of the field
-    // because of a presumed bug in vite or svelte.
-    // (says I can't access PlayerHand before initialization which is BS)
     this.hands = [new PlayerHand(true)];
   }
 
   public reset() {
-    this.removeExtraHands();
-    this.getCurrentHand().clear();
+    this.currentHandIndex = 0;
+    this.hands = [];
   }
 
   public decreaseBalance(sub: number) {
@@ -39,12 +36,12 @@ export class Player {
     return this.balance;
   }
 
-  public getCards(handIndex: number): CardModel[] {
+  public getCards(handIndex: number): Card[] {
     let hand = this.hands[handIndex];
     return hand.getCards();
   }
 
-  public getHands(): HandModel[] {
+  public getHands(): Hand[] {
     return this.hands;
   }
 
@@ -92,12 +89,6 @@ export class Player {
     let hand = this.getCurrentHand();
     let newHand = hand.split();
     this.hands.push(newHand);
-  }
-
-  removeExtraHands() {
-    if (!this.hasMultipleHands()) return;
-    this.hands.splice(1);
-    this.currentHandIndex = 0;
   }
 
   public async commitBalance() {

@@ -1,19 +1,17 @@
-import { CardModel } from "./card/CardModel";
+import { Card as Card } from "./card/Card";
 import { Rank } from "./card/Rank";
 
-export type HandState = "won" | "lost" | "push" | "in-play";
+export class Hand {
+  protected cards: Card[];
 
-export class HandModel {
-  protected cards: CardModel[];
+  private handState: "won" | "lost" | "push" | "in-play" = "in-play";
 
-  private handState: HandState = "in-play";
-
-  constructor(initCards: CardModel[] = []) {
+  constructor(initCards: Card[] = []) {
     this.cards = initCards;
   }
 
   public draw(face_down: boolean) {
-    let card = CardModel.getRandom(face_down);
+    let card = Card.getRandom(face_down);
     this.cards.push(card);
   }
 
@@ -44,7 +42,7 @@ export class HandModel {
     this.handState = "in-play";
   }
 
-  public getCards(): CardModel[] {
+  public getCards(): Card[] {
     return this.cards;
   }
 
@@ -76,7 +74,7 @@ export class HandModel {
     let total = 0;
 
     // Count the aces last or the value will be wrong if the ace is in the middle.
-    let aces: CardModel[] = [];
+    let aces: Card[] = [];
     this.cards.forEach((card) => {
       if (card.isFaceDown() && ignoreHiddenCards) return; // Don't count hidden cards
 
@@ -94,13 +92,13 @@ export class HandModel {
     return total;
   }
 
-  public higherThan(other: HandModel): boolean {
+  public higherThan(other: Hand): boolean {
     let my_val = this.getValueSum();
     let other_val = other.getValueSum();
     return my_val > other_val;
   }
 
-  public equal(other: HandModel): boolean {
+  public equal(other: Hand): boolean {
     let my_val = this.getValueSum();
     let other_val = other.getValueSum();
     return my_val === other_val;

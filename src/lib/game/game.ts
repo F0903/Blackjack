@@ -35,7 +35,7 @@ async function drawInitialCards(initialBet: number) {
 
   dealer_hand.update((dealer_hand) => {
     player.update((player) => {
-      player.assertHand(); // See comment in method for call reason.
+      player.assertHand();
 
       // Dealer gets one face down and one face up to start.
       dealer_hand.draw(true);
@@ -143,6 +143,7 @@ async function advanceDealer(): Promise<boolean> {
   });
 
   console.log("checking dealer state... | " + dealerState);
+
   //NOTE: typescript can not see that dealerState is modified in callback above.
   switch (dealerState) {
     //@ts-ignore

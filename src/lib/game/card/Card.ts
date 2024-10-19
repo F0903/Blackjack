@@ -1,8 +1,7 @@
 import { Rank } from "./Rank";
 import { Suit } from "./Suit";
 
-// Postfixed with "Model" to avoid confusion with the component.
-export class CardModel {
+export class Card {
   private suit: Suit;
   private rank: Rank;
   private face_down: boolean;
@@ -54,14 +53,14 @@ export class CardModel {
     }
   }
 
-  public static getRandom(face_down: boolean): CardModel {
+  public static getRandom(face_down: boolean): Card {
     const rank_max = 13 - 1; // there are 13 ranks (starts at 0)
     let rank: Rank = Math.round(Math.random() * rank_max);
 
     const suit_max = 4 - 1; // there are 4 suits (starts at 0)
     let suit: Suit = Math.round(Math.random() * suit_max);
 
-    let card = new CardModel(suit, rank, face_down);
+    let card = new Card(suit, rank, face_down);
     return card;
   }
 }

@@ -1,13 +1,13 @@
 import { BetPool } from "./BetPool";
-import { CardModel } from "./card/CardModel";
-import { HandModel } from "./HandModel";
+import { Card } from "./card/Card";
+import { Hand } from "./Hand";
 
-export class PlayerHand extends HandModel {
+export class PlayerHand extends Hand {
   private bets: BetPool = new BetPool();
 
   private selected: boolean;
 
-  constructor(selected: boolean = false, initCards: CardModel[] = []) {
+  constructor(selected: boolean = false, initCards: Card[] = []) {
     super(initCards);
     this.selected = selected;
   }
