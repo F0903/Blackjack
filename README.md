@@ -1,3 +1,3 @@
 # Blackjack
 
-A blackjack game made in Tauri with Svelte.
+A simple Blackjack game made in Tauri with Svelte.
